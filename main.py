@@ -16,7 +16,7 @@ def get_api_key() -> str:
 
 def read_cli_args() -> argparse.Namespace:
     """
-    Reads the CLI arguments.
+    Reads the CLI argument.
 
     Returns: argparse.Namespace
     """
