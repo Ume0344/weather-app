@@ -29,7 +29,7 @@ class TestWeather(unittest.TestCase):
     def test_get_weather_data_200_okay(self, mock_request_get, mock_get_api_url):
         w = Weather()
 
-        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=4cd2268194c727e8b807bf7ba72d5213"
+        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=01234567819"
 
         mock_request_get.return_value.status_code = 200
         response = w.get_weather_data("dresden")
