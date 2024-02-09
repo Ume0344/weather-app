@@ -1,17 +1,6 @@
-from lib.weather import Weather as w
-from configparser import ConfigParser
+from lib.weather import Weather
 import argparse
-
-
-def get_api_key() -> str:
-    """
-    Returns the api key after fetching it from secrets.ini file.
-    returns: API Key
-    """
-    config = ConfigParser()
-    config.read("./configuration/secrets.ini")
-
-    return config["openweather"]["api_key"]
+from typing import List
 
 
 def read_cli_args() -> argparse.Namespace:
@@ -34,9 +23,14 @@ def read_cli_args() -> argparse.Namespace:
 
 
 def main():
-    w.print_weather()
     user_args = read_cli_args()
-    print(user_args)
+    w = Weather()
+
+    cities: List[str] = user_args.city
+
+    for city in cities:
+        weather_data = w.get_weather_data(city)
+        print(f"{city}: {weather_data.json()}\n")
 
 
 if __name__ == "__main__":
