@@ -1,5 +1,6 @@
 from lib.weather import Weather
 import argparse
+import sys
 from typing import List
 
 
@@ -28,9 +29,13 @@ def main():
 
     cities: List[str] = user_args.city
 
+    if cities is None:
+        sys.exit("No city is mentioned. Please mention atleast one city")
+
     for city in cities:
         weather_data = w.get_weather_data(city)
-        print(f"{city}: {weather_data.json()}\n")
+        description, temperature, feels_like_temperature = w.format_weather_data(weather_data=weather_data.json())
+        print(f"City: {city.capitalize()}\t{description}\tCurrent Temperature: {temperature}K\tFeels like: {feels_like_temperature}K\n")
 
 
 if __name__ == "__main__":

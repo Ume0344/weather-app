@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 import requests
+from typing import Dict, Tuple
 
 WEATHER_API_BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
@@ -54,3 +55,16 @@ class Weather:
                 print(f"Error: Something went wrong getting the weather data")
 
         return response
+
+    def format_weather_data(self, weather_data: Dict) -> Tuple[str, int, int]:
+        """
+        Format the weather data.
+        param weather_data: Weather data for a city
+
+        returns: Weather description, temperature, feels_like temperature
+        """
+        description = weather_data['weather'][0]['description']
+        temperature = weather_data["main"]["temp"]
+        feels_like = weather_data["main"]["feels_like"]
+
+        return description, temperature, feels_like

@@ -80,6 +80,25 @@ class TestWeather(unittest.TestCase):
 
         assert response.status_code == 300
 
+    def test_format_weather_data(self):
+        w = Weather()
+
+        weather_data = {
+            'coord': {'lon': 13.7383, 'lat': 51.0509},
+            'weather': [{'id': 800, 'main': 'Clear', 'description': 'clear sky', 'icon': '01d'}],
+            'base': 'stations',
+            'main': {'temp': 285.16, 'feels_like': 284.74, 'temp_min': 282.74, 'temp_max': 287.45, 'pressure': 983, 'humidity': 89},
+            'visibility': 10000, 'wind': {'speed': 4.63, 'deg': 150}, 'clouds': {'all': 0}, 'dt': 1707564620,
+            'sys': {'type': 2, 'id': 2042201, 'country': 'DE', 'sunrise': 1707546508, 'sunset': 1707581411},
+            'timezone': 3600, 'id': 2935022, 'name': 'Dresden', 'cod': 200
+            }
+
+        description, temp, feels_like = w.format_weather_data(weather_data=weather_data)
+
+        assert description == 'clear sky'
+        assert temp == 285.16
+        assert feels_like == 284.74
+
 
 if __name__ == '__main__':
     unittest.main()
