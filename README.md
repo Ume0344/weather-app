@@ -17,3 +17,13 @@ curl "https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API k
 ```
 https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}&units=metric
 ```
+
+## Get Weather Updates
+- To get the weather updates for a city, run;
+```
+python .\main.py -c <city1_name> <city2_name> <...>
+```
+- To run unittests, run;
+```
+python .\lib\test_weather.py
+```
