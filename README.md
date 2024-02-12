@@ -18,12 +18,39 @@ curl "https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API k
 https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}&units=metric
 ```
 
+## Get the dependencies through requirements.txt
+- To create requirements.txt file, run from project root directory;
+```
+pip freeze > requirements.txt
+```
+- To get all the dependecies, run from project root directory;
+```
+pip install -r requirements.txt
+```
+
 ## Get Weather Updates
-- To get the weather updates for a city, run;
+- To get help on how to run the project, run;
+```
+python main.py --help
+```
+
+- To get the weather updates for a city in kelvin, run;
 ```
 python .\main.py -c <city1_name> <city2_name> <...>
 ```
-- To run unittests, run;
+
+- To get the weather updates for a city in fahrenheit, run;
 ```
-python .\lib\test_weather.py
+python .\main.py -c <city1_name> <city2_name> <...> -f
+```
+
+- To get the weather updates for a city in celcius, run;
+```
+python .\main.py -c <city1_name> <city2_name> <...> -cel
+```
+
+- To run unittests, run from project root directory;
+```
+coverage run .\lib\test_weather.py
+coverage report -m
 ```

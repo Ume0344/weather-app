@@ -1,5 +1,5 @@
 import unittest
-from lib.weather import Weather
+from weather import Weather
 from unittest.mock import  patch
 
 
