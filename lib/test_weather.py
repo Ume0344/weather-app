@@ -1,5 +1,5 @@
 import unittest
-from weather import Weather
+from lib.weather import Weather
 from unittest.mock import  patch
 
 
@@ -13,14 +13,50 @@ class TestWeather(unittest.TestCase):
         assert api_key == expected
 
     @patch("weather.Weather._get_api_key")
-    def test_get_api_url(self, mock_get_api_key):
+    def test_get_api_url_kelvin(self, mock_get_api_key):
         w = Weather()
 
         mock_get_api_key.return_value = "12345678910"
 
-        api_url = w.get_api_url("dresden")
+        api_url = w.get_api_url("dresden", fahrenheit_flag=False, celcius_flag=False)
 
         expected_url = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=12345678910"
+
+        assert api_url == expected_url
+    
+    @patch("weather.Weather._get_api_key")
+    def test_get_api_url_celcius(self, mock_get_api_key):
+        w = Weather()
+
+        mock_get_api_key.return_value = "12345678910"
+
+        api_url = w.get_api_url("dresden", fahrenheit_flag=False, celcius_flag=True)
+
+        expected_url = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=12345678910&units=metric"
+
+        assert api_url == expected_url
+    
+    @patch("weather.Weather._get_api_key")
+    def test_get_api_url_fahrenheit(self, mock_get_api_key):
+        w = Weather()
+
+        mock_get_api_key.return_value = "12345678910"
+
+        api_url = w.get_api_url("dresden", fahrenheit_flag=True, celcius_flag=False)
+
+        expected_url = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=12345678910&units=imperial"
+
+        assert api_url == expected_url
+
+    @patch("weather.Weather._get_api_key")
+    def test_get_api_url_entered_two_units(self, mock_get_api_key):
+        w = Weather()
+
+        mock_get_api_key.return_value = "12345678910"
+
+        api_url = w.get_api_url("dresden", fahrenheit_flag=True, celcius_flag=True)
+
+        expected_url = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=12345678910&units=metric"
 
         assert api_url == expected_url
 

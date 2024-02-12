@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 import requests
+from requests.models import Response
 from typing import Dict, Tuple
 
 WEATHER_API_BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
@@ -20,28 +21,38 @@ class Weather:
 
         return config["openweather"]["api_key"]
 
-    def get_api_url(self, city: str) -> str:
+    def get_api_url(self, city: str, fahrenheit_flag: bool = False, celcius_flag: bool = False) -> str:
         """
         Returns the url to weather data for a city.
         param city: Name of the city to check its weather
         param api_key: API key to access  OpenWeather API.
 
-        returns: URL to get weather data for a city
+        returns: URL to get weather data for a city according to unit of measurement.
         """
 
+        api_url = ""
         api_key = self._get_api_key(configuration_file="configuration/secrets.ini")
-        api_url = f"{WEATHER_API_BASE_URL}?q={city}&appid={api_key}"
 
+        if fahrenheit_flag == False and celcius_flag == False:
+            api_url = f"{WEATHER_API_BASE_URL}?q={city}&appid={api_key}"
+        elif fahrenheit_flag == True and celcius_flag == False:
+            api_url = f"{WEATHER_API_BASE_URL}?q={city}&appid={api_key}&units=imperial"
+        elif fahrenheit_flag == False and celcius_flag == True:
+            api_url = f"{WEATHER_API_BASE_URL}?q={city}&appid={api_key}&units=metric"
+        elif fahrenheit_flag == True and celcius_flag == True:
+            print(f"You entered celcius and fahrenheit. Showing results in celcius only. Please enter only one unit of measurement")
+            api_url = f"{WEATHER_API_BASE_URL}?q={city}&appid={api_key}&units=metric"
+        
         return api_url
     
-    def get_weather_data(self, city: str):
+    def get_weather_data(self, city: str, fahrenheit_flag: bool = False, celcius_flag: bool = False) -> Response:
         """
         Get the weather data through api_url.
         param api_url: URL to get the data
 
         returns: Weather data
         """
-        api_url = self.get_api_url(city=city)
+        api_url = self.get_api_url(city=city, fahrenheit_flag=fahrenheit_flag, celcius_flag=celcius_flag)
 
         try:
             response = requests.get(api_url)
