@@ -1,6 +1,8 @@
 import unittest
 from weather import Weather
-from unittest.mock import  patch
+from unittest.mock import  patch, Mock
+import requests
+from requests.models import Response
 
 
 class TestWeather(unittest.TestCase):
@@ -61,60 +63,66 @@ class TestWeather(unittest.TestCase):
         assert api_url == expected_url
 
     @patch("weather.Weather.get_api_url")
-    @patch("weather.requests.get")
-    def test_get_weather_data_200_okay(self, mock_request_get, mock_get_api_url):
+    @patch("requests.get")
+    def test_get_weather_data_200(self, mock_request, mock_get_api_url):
+        mock_response = Mock()
+        mock_response.status_code = 200
+
         w = Weather()
-
         mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=01234567819"
+        mock_request.return_value = mock_response
 
-        mock_request_get.return_value.status_code = 200
-        response = w.get_weather_data("dresden")
-
-        response.raise_for_status.assert_called_once()
+        response = w.get_weather_data("city", True, False)
 
         assert response.status_code == 200
 
     @patch("weather.Weather.get_api_url")
-    @patch("weather.requests.get")
-    def test_get_weather_data_404_not_found(self, mock_request_get, mock_get_api_url):
+    @patch("requests.get")
+    def test_get_weather_data_404(self, mock_request, mock_get_api_url):
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=mock_response)
+        mock_response.status_code = 404
+
         w = Weather()
+        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=01234567819"
+        mock_request.return_value = mock_response
 
-        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=blablabla&appid=0123456789103"
+        with self.assertRaises(SystemExit) as context:
+            w.get_weather_data("city", True, False)
 
-        mock_request_get.return_value.status_code = 404
-        response = w.get_weather_data("blablabla")
-
-        response.raise_for_status.assert_called_once()
-
-        assert response.status_code == 404
+        self.assertIn("Error: Could not find weather data for this city", str(context.exception))
 
     @patch("weather.Weather.get_api_url")
-    @patch("weather.requests.get")
-    def test_get_weather_data_401_access_denied(self, mock_request_get, mock_get_api_url):
+    @patch("requests.get")
+    def test_get_weather_data_401(self, mock_request, mock_get_api_url):
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=mock_response)
+        mock_response.status_code = 401
+
         w = Weather()
+        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=01234567819"
+        mock_request.return_value = mock_response
 
-        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=blablabla&appid=123456789012345"
+        with self.assertRaises(SystemExit) as context:
+            w.get_weather_data("city", True, False)
 
-        mock_request_get.return_value.status_code = 401
-        response = w.get_weather_data("blablabla")
-
-        response.raise_for_status.assert_called_once()
-
-        assert response.status_code == 401
+        self.assertEqual("Error: Access denied, check your API key", str(context.exception))
 
     @patch("weather.Weather.get_api_url")
-    @patch("weather.requests.get")
-    def test_get_weather_data_other_failed_status_codes(self, mock_request_get, mock_get_api_url):
+    @patch("requests.get")
+    def test_get_weather_data_other_error_codes(self, mock_request, mock_get_api_url):
+        mock_response = Mock()
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(response=mock_response)
+        mock_response.status_code = 400
+
         w = Weather()
+        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=dresden&appid=01234567819"
+        mock_request.return_value = mock_response
 
-        mock_get_api_url.return_value = "http://api.openweathermap.org/data/2.5/weather?q=blablabla&appid=12345678901"
+        with self.assertRaises(SystemExit) as context:
+            w.get_weather_data("city", True, False)
 
-        mock_request_get.return_value.status_code = 300
-        response = w.get_weather_data("blablabla")
-
-        response.raise_for_status.assert_called_once()
-
-        assert response.status_code == 300
+        self.assertIn("Error: Something went wrong getting the weather data", str(context.exception))
 
     def test_format_weather_data(self):
         w = Weather()

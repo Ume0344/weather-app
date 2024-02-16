@@ -2,6 +2,7 @@ from configparser import ConfigParser
 import requests
 from requests.models import Response
 from typing import Dict, Tuple
+import sys
 
 WEATHER_API_BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
@@ -59,11 +60,11 @@ class Weather:
             response.raise_for_status()
         except requests.exceptions.HTTPError as err:
             if err.response.status_code == 404:
-                print(f"Error: Could not find weather data for this city")
+                sys.exit(f"Error: Could not find weather data for this city")
             elif err.response.status_code == 401:
-                print(f"Error: Access denied, check your API key")
+                sys.exit(f"Error: Access denied, check your API key")
             else:
-                print(f"Error: Something went wrong getting the weather data")
+                sys.exit(f"Error: Something went wrong getting the weather data")
 
         return response
 
